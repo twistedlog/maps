@@ -58,10 +58,10 @@ WSGI_APPLICATION = 'gmaps.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'maps',
-        'USER': 'root',
-        'PASSWORD': 'root',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(os.path.abspath(os.path.dirname(__file__)), 'maps.db'),
+        'USER': '',
+        'PASSWORD': '',
         'HOST': '',
         'PORT': '',
     }
