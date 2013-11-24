@@ -2,9 +2,14 @@
 {% block content %}
         <div class="row-fluid">
             <div class="span3">
-                {% for path in paths %}
-                    <p>{{path.src}} -> {{path.dest}}</p>
-                {% endfor %}
+                <ul>
+                    {% for path in paths %}
+                        <li>{{path.src.name}}->{{path.dest.name}}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="span7">
+                <div id="map-canvas"></div>
             </div>
         </div>
 {% endblock content %}
