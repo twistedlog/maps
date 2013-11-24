@@ -19,6 +19,9 @@
 <script>
 var listMap = [
     [28.635248, 77.224434],
+	[28.635521, 77.224083],
+	[28.636105, 77.223526],
+	[28.636328, 77.223526],
     [28.408878, 77.317230],
     [28.138710, 77.329094],
     [27.900349, 77.366745],
@@ -51,7 +54,7 @@ function initialize() {
 			coordinates.push(obj);
 			setPath();
 			updateMarker(obj);
-			}, 5000 * index);
+			}, 1000 * index);
 		});
 
 	function setPath() {

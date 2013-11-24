@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+        <div class="row-fluid">
+            <div class="span3">
+                {% for path in paths %}
+                    <p>{{path.src}} -> {{path.dest}}</p>
+                {% endfor %}
+            </div>
+        </div>
+{% endblock content %}

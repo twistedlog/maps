@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="{{ STATIC_URL }}css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    {% block javascripts %}
+        <script src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
+    {% endblock javascripts %}
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        {% block content %} {% endblock content %}
+    </div>
+
+</body>
+</html>

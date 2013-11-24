@@ -1,0 +1,22 @@
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="container">
+            <div class="nav-collapse">
+                <ul class="nav">
+                    <li><a href="/">Home</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="/dashboard/">Paths</a></li>
+                    {% else %}
+                        <li><a href="/login/">Login</a></li>
+                    {% endif %}
+                </ul>
+                {% if user.is_authenticated %}
+                    <form class="navbar-form pull-right" action="/accounts/logout/" method="POST">
+                        {% csrf_token %}
+                        <input class="btn btn-mini" type="submit" value="Logout" />
+                    </form>
+                {% endif %}
+            </div>  <!-- nav-collapse -->
+        </div>  <!-- container -->
+    </div>  <!-- navbar-inner -->
+</div>  <!-- navbar -->
