@@ -12,10 +12,12 @@
 	
 	<script type="text/javascript">
 		var csrftoken = $.cookie('csrftoken');
+
 		function csrfSafeMethod(method) {
 		    // these HTTP methods do not require CSRF protection
 		    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 		}
+
 		function sameOrigin(url) {
 		    // test that a given url is a same-origin URL
 		    // url could be relative or scheme relative or absolute
@@ -29,6 +31,7 @@
 			// or any other URL that isn't scheme relative or absolute i.e relative.
 			!(/^(\/\/|http:|https:).*/.test(url));
 		}
+
 		$.ajaxSetup({
 		    beforeSend: function(xhr, settings) {
 			if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
@@ -57,7 +60,6 @@
 	 }
 	
 	 config.setLength = function(length) {
-		console.log("setting length");
 		console.log(length);
 		config["length"] = length;
 	 }
@@ -71,10 +73,10 @@
 	 }
 
 	 config.reset = function() {
-		 config["next"] = null,
-		 config["id"] = null,
-		 config["length"] = 0,
-		 config["marker"] = [],
+		 config["next"] = null;
+		 config["id"] = null;
+		 config["length"] = 0;
+		 config["marker"] = [];
 	 }
 
 	function reset() {
@@ -99,7 +101,6 @@
 	function init(id) {
 	    // set the id in config
 	    config.setId(id);
-	    var myconfig = config;
 	    $.ajax({
 		type: 'POST',
 		url: '/path/' + id + '/',
@@ -107,7 +108,6 @@
 		async: false ,
 		contentType: 'json',
 		success: function(response) {
-			console.log(myconfig);
 			console.log("success");
 			// set the config on response
 			setConfigOnResponse(response);
@@ -121,6 +121,13 @@
 		config.setMarker(response["marker"]);
 		config.setNext(response["next"]);
 		config.setLength(response["length"]);
+		if (response["coordinates"]) {
+			var tempCoordinates = response["coordinates"]
+			$.each(tempCoordinates, function(index, ele) {
+				var obj = new google.maps.LatLng(ele[0], ele[1]);
+				coordinates.push(obj);
+			}); 
+		}
 	}
 	
 	function updateMarker() {
@@ -156,8 +163,56 @@
 		console.log("foo");
 		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 		updateMarker();
+		tracePath();
+	}
+
+	function tracePath() {
+	    var tempArray = []
+	    for (var i=0; i < config["length"]; i++) {
+		 tempArray.push(i);
+		}
+	    console.log(tempArray);
+	    $.each(tempArray, function(index, value) {
+		setTimeout(function() {
+			callToServer();
+			}, 5000 * index);
+		});
+	}
+
+	function callToServer() {
+	    $.ajax({
+		type: 'POST',
+		url: '/path/' + id + '/',
+		data: JSON.stringify({"config" : config}),
+		async: false ,
+		contentType: 'json',
+		success: function(response) {
+			console.log("success");
+			// set the config on response
+			setConfigOnResponse(response);
+			// set the map
+			updateMap();
+			},
+		});	
+		
 	}
 	
+	function setPath(){
+		console.log("inside setPath");
+		var routePath = new google.maps.Polyline({
+			path: coordinates,
+			geodesic: true,
+			strokeColor: '#FF0000',
+			strokeOpacity: 1.0,
+			strokeWeight: 2,
+		})
+		routePath.setMap(map);
+	}
+	
+	function updateMap() {
+		setPath();
+		updateMarker();
+	}
 	/*
 	function setupMap(){
 		console.log("inside setupMap");
