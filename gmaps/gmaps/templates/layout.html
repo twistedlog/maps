@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-        <div class="row-fluid">
-            <div class="span3">
-                <ul>
-                    {% for path in paths %}
-                        <li>{{path.src.name}}->{{path.dest.name}}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="span7">
-                <div id="map-canvas"></div>
-            </div>
-        </div>
+	<div class="row-fluid" style="background-color:">
+		<div class="span4">
+			<ul class="paths">
+				{% for path in paths %}
+				<a href="#"><li id="{{path.id}}">{{path.src.name}}->{{path.dest.name}}</li></a>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="span7">
+			<div id="map-canvas" style="width:600px; height:600px">
+			</div>
+		</div>
+	</div>
 {% endblock content %}
