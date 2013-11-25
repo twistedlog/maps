@@ -49,7 +49,7 @@
 	 var coordinates = [];
 
   	 var config = {
-		"next": null,
+		"current": null,
 		"id": null,
                 "length": 0,
 		"marker": [], 
@@ -64,8 +64,8 @@
 		config["length"] = length;
 	 }
 
-	 config.setNext = function(next) {
-		config["next"] = next;
+	 config.setCurrent = function(current) {
+		config["current"] = current;
 	 }
  
 	 config.setMarker = function(marker) {
@@ -73,7 +73,7 @@
 	 }
 
 	 config.reset = function() {
-		 config["next"] = null;
+		 config["current"] = null;
 		 config["id"] = null;
 		 config["length"] = 0;
 		 config["marker"] = [];
@@ -119,7 +119,7 @@
 	
 	function setConfigOnResponse(response) {
 		config.setMarker(response["marker"]);
-		config.setNext(response["next"]);
+		config.setCurrent(response["current"]);
 		config.setLength(response["length"]);
 		if (response["coordinates"]) {
 			var tempCoordinates = response["coordinates"]
@@ -159,7 +159,6 @@
 			center: new google.maps.LatLng(config['marker'][0], config['marker'][1]),
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		};
-		console.log("foo");
 		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 		updateMarker();
 		tracePath();
@@ -167,7 +166,7 @@
 
 	function tracePath() {
 	    var tempArray = []
-	    for (var i=1; i < config["length"]; i++) {
+	    for (var i=0; i < config["length"]; i++) {
 		 tempArray.push(i);
 		}
 	    console.log(tempArray);
@@ -203,7 +202,7 @@
 			geodesic: true,
 			strokeColor: '#FF0000',
 			strokeOpacity: 1.0,
-			strokeWeight: 2,
+			strokeWeight: 3,
 		})
 		routePath.setMap(map);
 	}
