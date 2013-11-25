@@ -26,13 +26,14 @@ class RouteView(View):
 
     def post(self, request, id):
         config = json.loads(request.body)
+        path = Path.objects.get(id=id)
+        length = len(Routes.objects.filter(path=path))
+
         if not config['config']['next']:
             # first time
-            path = Path.objects.get(id=id)
-            length = len(Routes.objects.filter(path=path))
-            route = Routes.objects.filter(path=path)[0]
+            route = Routes.objects.filter(path=path).order_by('priority')[0]
             next = route.id
-            marker = [route.src.longitude, route.dest.latitude]
+            marker = [route.src.longitude, route.src.latitude]
             coordinates = None
 
             return_config = {
@@ -42,3 +43,21 @@ class RouteView(View):
                 'coordinates': coordinates,
             }
             return HttpResponse(json.dumps(return_config), content_type="application/json")
+        else:
+            route = Routes.objects.filter(path=path).order_by('priority')[config['config']['next']]
+            next = route.id
+            marker = [route.src.longitude, route.src.latitude]
+            coordinates = self.get_coordinates(Routes.objects.filter(path=path).order_by('priority')[next-1])
+            return_config = {
+                'length': length,
+                'next': next,
+                'marker': marker,
+                'coordinates': coordinates,
+            }
+            return HttpResponse(json.dumps(return_config), content_type="application/json")
+
+
+    def get_coordinates(self, route):
+        coordinates = RouteDetail.objects.filter(route=route).order_by('priority')
+        coordinates = [[ele.longitude, ele.latitude] for ele in coordinates]
+        return coordinates
