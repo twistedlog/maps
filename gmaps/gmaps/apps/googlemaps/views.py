@@ -15,7 +15,21 @@ class PathView(View):
 
     def get(self, request):
         paths = Path.objects.all()
+        paths = self.filter_paths_permission(request, paths)
         return render(request, 'layout.html', {'paths': paths})
+
+    def filter_paths_permission(self, request, paths):
+        result = []
+
+        for path in paths:
+            if path.group == 'NORMAL':
+                result.append(path)
+            elif path.group == 'STAFF' and request.user.is_staff:
+                result.append(path)
+            elif path.group == 'ADMIN' and request.user.is_superuser:
+                result.append(path)
+
+        return result
 
 
 class RouteView(View):
@@ -31,13 +45,13 @@ class RouteView(View):
         length = len(Routes.objects.filter(path=path))
         current = config['config']['current']
         routes = Routes.objects.filter(path=path).order_by('priority')
+
         if current is None:
             # first time
             route = routes[0]
             marker = [route.src.longitude, route.src.latitude]
             coordinates = None
             current = 0
-
         else:
             try:
                 route = routes[current + 1]
@@ -54,6 +68,7 @@ class RouteView(View):
             'current': current,
             'marker': marker,
             'coordinates': coordinates,
+            'color': path.color,
         }
         return HttpResponse(json.dumps(return_config),
                             content_type="application/json")
