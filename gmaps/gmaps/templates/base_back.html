@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="{{ STATIC_URL }}css/bootstrap/css/bootstrap.css" rel="stylesheet">
+    {% block javascripts %}
+        <script src="{{ STATIC_URL }}js/jquery-1.10.2.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.cookie.js"></script>
+	<script type="text/javascript"
+	   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGKPqbynY7bkvkZgdopncSf4lF7H3SZE0&sensor=false"></script>	
+	
+	<script type="text/javascript">
+		var csrftoken = $.cookie('csrftoken');
+		function csrfSafeMethod(method) {
+		    // these HTTP methods do not require CSRF protection
+		    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+		}
+		function sameOrigin(url) {
+		    // test that a given url is a same-origin URL
+		    // url could be relative or scheme relative or absolute
+		    var host = document.location.host; // host + port
+		    var protocol = document.location.protocol;
+		    var sr_origin = '//' + host;
+		    var origin = protocol + sr_origin;
+		    // Allow absolute or scheme relative URLs to same origin
+		    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+			(url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+			// or any other URL that isn't scheme relative or absolute i.e relative.
+			!(/^(\/\/|http:|https:).*/.test(url));
+		}
+		$.ajaxSetup({
+		    beforeSend: function(xhr, settings) {
+			if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+			    // Send the token to same-origin, relative URLs only.
+			    // Send the token only if the method warrants CSRF protection
+			    // Using the CSRFToken value acquired earlier
+			    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			}
+		    }
+		});
+	</script>
+    <script type="text/javascript">
+  	 var config = {
+		"next": null,
+		"id": null,
+                "length": 0,
+		"marker": [], 
+	 }
+
+         config.setId = function(id) {
+		config["id"] = id;
+	 }
+	
+	 config.setLength = function(length) {
+		console.log("setting length");
+		console.log(length);
+		config["length"] = length;
+	 }
+
+	 config.setNext = function(next) {
+		config["next"] = next;
+	 }
+ 
+	 config.setMarker = function(marker) {
+		config["marker"] = marker;
+	 }
+
+	 $('ul.paths li').click(function() {
+		    console.log($(this));
+		    console.log($(this).attr('id'));
+		    id = $(this).attr('id');
+		    console.log(id);
+		    init(id);
+         });
+     
+	
+	function init(id) {
+	    config.setId(id);
+	    var myconfig = config;
+	    $.ajax({
+		type: 'POST',
+		url: '/path/' + id + '/',
+		data: JSON.stringify({"config" : config}),
+		async: false ,
+		contentType: 'json',
+		success: function(response) {
+			console.log(myconfig);
+			console.log("success");
+			var data = response;
+			console.log(data);
+			console.log(data["marker"]);
+			console.log(response);
+			console.log(response.marker);
+			console.log(response["marker"]);
+			config.setMarker(response["marker"]);
+			config.setNext(response["next"]);
+			config.setLength(response["length"]);
+			//var myconfig = config;
+			initMap();
+			},
+		});	
+	}
+	
+	var markers = [];
+	var map;
+	var coorinates = [];
+
+	function updateMarker() {
+		console.log("inside update marker");
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(config['marker'][0], config['marker'][1]),
+			map: map,
+		});
+		//clearMarkers();
+		markers.push(marker);
+	}
+		
+	function setAllMap(map) {
+		for (var i=0; i <markers.length; i++) {
+			markers[i].setMap(map);
+		}
+	}
+
+	function clearMarkers() {
+		setAllMap(null);
+	}
+	function initMap(){
+		console.log("inside init map");
+		console.log(config);	
+		var mapOptions = {
+			zoom: 8,
+			center: new google.maps.LatLng(config['marker'][0],
+							config['marker'][1]),
+			mapTypeId: google.maps.MapTypeId.TERRAIN
+		};
+		console.log("foo");
+		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+		updateMarker();
+	}
+	
+	function setupMap(){
+		console.log("inside setupMap");
+		var mapOptions = {
+			zoom: 8,
+			center: new google.maps.LatLng(28.635248, 77.224434),
+			mapTypeId: google.maps.MapTypeId.TERRAIN
+		};
+		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+	}
+
+	google.maps.event.addDomListener(window, 'load', setupMap);			
+	</script>
+    {% endblock javascripts %}
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        {% block content %} {% endblock content %}
+    </div>
+
+</body>
+</html>
