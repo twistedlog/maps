@@ -25,36 +25,38 @@ class RouteView(View):
     http_method_names = ['post']
 
     def post(self, request, id):
+
         config = json.loads(request.body)
         path = Path.objects.get(id=id)
         length = len(Routes.objects.filter(path=path))
-
-        if not config['config']['next']:
+        current = config['config']['current']
+        routes = Routes.objects.filter(path=path).order_by('priority')
+        if current is None:
             # first time
-            route = Routes.objects.filter(path=path).order_by('priority')[0]
-            next = route.id
+            route = routes[0]
             marker = [route.src.longitude, route.src.latitude]
             coordinates = None
+            current = 0
 
-            return_config = {
-                'length': length,
-                'next': next,
-                'marker': marker,
-                'coordinates': coordinates,
-            }
-            return HttpResponse(json.dumps(return_config), content_type="application/json")
         else:
-            route = Routes.objects.filter(path=path).order_by('priority')[config['config']['next']]
-            next = route.id
-            marker = [route.src.longitude, route.src.latitude]
-            coordinates = self.get_coordinates(Routes.objects.filter(path=path).order_by('priority')[next-1])
-            return_config = {
-                'length': length,
-                'next': next,
-                'marker': marker,
-                'coordinates': coordinates,
-            }
-            return HttpResponse(json.dumps(return_config), content_type="application/json")
+            try:
+                route = routes[current + 1]
+                marker = [route.src.longitude, route.src.latitude]
+                coordinates = self.get_coordinates(routes[current])
+                current = current + 1
+            except IndexError:
+                route = routes[current]
+                marker = [route.dest.longitude, route.dest.latitude]
+                coordinates = self.get_coordinates(routes[current])
+
+        return_config = {
+            'length': length,
+            'current': current,
+            'marker': marker,
+            'coordinates': coordinates,
+        }
+        return HttpResponse(json.dumps(return_config),
+                            content_type="application/json")
 
 
     def get_coordinates(self, route):
