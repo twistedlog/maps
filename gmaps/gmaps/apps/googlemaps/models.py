@@ -1,6 +1,15 @@
 from django.db import models
 
 
+class Groups(models.Model):
+    PERM_GROUPS = (
+        (1, 'ADMIN'),
+        (2, 'STAFF'),
+        (3, 'NORMAL'),
+    )
+    group = models.CharField(max_length=10, choices=PERM_GROUPS)
+
+
 class Locations(models.Model):
 
     """ Master Table for locations with (long, lat)."""
@@ -18,9 +27,22 @@ class Locations(models.Model):
 class Path(models.Model):
 
     """Path model contains master list of Paths."""
+    PERM_GROUPS = (
+        ('ADMIN', 'ADMIN'),
+        ('STAFF', 'STAFF'),
+        ('NORMAL', 'NORMAL'),
+    )
+
+    COLOR_CODES = (
+        ('#FF0000', 'red'),
+        ('#00FF00', 'green'),
+        ('#0000FF', 'blue'),
+    )
 
     src = models.ForeignKey(Locations, related_name='path_src')
     dest = models.ForeignKey(Locations, related_name='path_dest')
+    group = models.CharField(max_length=10, choices=PERM_GROUPS)
+    color = models.CharField(max_length=8, choices=COLOR_CODES)
 
     def __unicode__(self):
         return u"{0} -> {1}".format(
@@ -51,5 +73,6 @@ class RouteDetail(models.Model):
 
     def __unicode__(self):
         return u"({0},{1}) priority: {2} route: {3} path: {4}".format(
-            self.longitude, self.latitude, self.priority, self.route.id, self.route.path.id
+            self.longitude, self.latitude, self.priority, self.route.id,
+            self.route.path.id
         )
