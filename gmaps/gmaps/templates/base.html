@@ -156,8 +156,7 @@
 		console.log(config);	
 		var mapOptions = {
 			zoom: 8,
-			center: new google.maps.LatLng(config['marker'][0],
-							config['marker'][1]),
+			center: new google.maps.LatLng(config['marker'][0], config['marker'][1]),
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		};
 		console.log("foo");
@@ -168,7 +167,7 @@
 
 	function tracePath() {
 	    var tempArray = []
-	    for (var i=0; i < config["length"]; i++) {
+	    for (var i=1; i < config["length"]; i++) {
 		 tempArray.push(i);
 		}
 	    console.log(tempArray);
