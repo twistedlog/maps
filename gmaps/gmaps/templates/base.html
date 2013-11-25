@@ -52,7 +52,8 @@
 		"current": null,
 		"id": null,
                 "length": 0,
-		"marker": [], 
+		"marker": [],
+	        "color" : '#E3E3E3',	
 	 }
 	
          config.setId = function(id) {
@@ -72,11 +73,16 @@
 		config["marker"] = marker;
 	 }
 
+	 config.setColor = function(color) {
+		config["color"] = color;
+	 }
+
 	 config.reset = function() {
 		 config["current"] = null;
 		 config["id"] = null;
 		 config["length"] = 0;
 		 config["marker"] = [];
+	         config["color"] = '#E3E3E3';	
 	 }
 
 	function reset() {
@@ -121,6 +127,8 @@
 		config.setMarker(response["marker"]);
 		config.setCurrent(response["current"]);
 		config.setLength(response["length"]);
+		config.setColor(response["color"]);
+
 		if (response["coordinates"]) {
 			var tempCoordinates = response["coordinates"]
 			$.each(tempCoordinates, function(index, ele) {
@@ -200,7 +208,7 @@
 		var routePath = new google.maps.Polyline({
 			path: coordinates,
 			geodesic: true,
-			strokeColor: '#FF0000',
+			strokeColor: config["color"],
 			strokeOpacity: 1.0,
 			strokeWeight: 3,
 		})
