@@ -2,7 +2,9 @@ from django.db import models
 
 
 class Locations(models.Model):
-    """ Master Table for locations with (long, lat)"""
+
+    """ Master Table for locations with (long, lat)."""
+
     name = models.CharField(max_length=200)
     longitude = models.FloatField()
     latitude = models.FloatField()
@@ -12,8 +14,11 @@ class Locations(models.Model):
             self.name, self.longitude, self.latitude
         )
 
+
 class Path(models.Model):
-    """Path model contains master list of Paths"""
+
+    """Path model contains master list of Paths."""
+
     src = models.ForeignKey(Locations, related_name='path_src')
     dest = models.ForeignKey(Locations, related_name='path_dest')
 
@@ -24,7 +29,9 @@ class Path(models.Model):
 
 
 class Routes(models.Model):
-    """Contains all the hops in bw a path"""
+
+    """Contains all the hops in bw a path."""
+
     src = models.ForeignKey(Locations, related_name='route_src')
     dest = models.ForeignKey(Locations, related_name='route_dest')
     path = models.ForeignKey(Path)
@@ -33,4 +40,16 @@ class Routes(models.Model):
     def __unicode__(self):
         return u"{0} ->{1}  priority: {2}".format(
             self.src, self.dest, self.priority
+        )
+
+
+class RouteDetail(models.Model):
+    route = models.ForeignKey(Routes)
+    longitude = models.FloatField()
+    latitude = models.FloatField()
+    priority = models.IntegerField()
+
+    def __unicode__(self):
+        return u"({0},{1}) priority: {2} route: {3} path: {4}".format(
+            self.longitude, self.latitude, self.priority, self.route.id, self.route.path.id
         )
