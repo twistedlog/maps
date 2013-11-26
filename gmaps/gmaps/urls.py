@@ -15,5 +15,5 @@ urlpatterns = patterns('',
     url(r'^paths/$', login_required(PathView.as_view())),
     url(r'path/(?P<id>\d)/$', RouteView.as_view()),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
-    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
+    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}),
 )
