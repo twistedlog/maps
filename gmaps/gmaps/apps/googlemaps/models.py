@@ -1,15 +1,6 @@
 from django.db import models
 
 
-class Groups(models.Model):
-    PERM_GROUPS = (
-        (1, 'ADMIN'),
-        (2, 'STAFF'),
-        (3, 'NORMAL'),
-    )
-    group = models.CharField(max_length=10, choices=PERM_GROUPS)
-
-
 class Locations(models.Model):
 
     """ Master Table for locations with (long, lat)."""
