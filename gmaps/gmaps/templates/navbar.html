@@ -5,12 +5,13 @@
                 <ul class="nav">
                     <li><a href="/">Home</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="/dashboard/">Paths</a></li>
+                        <li><a href="/paths/">Paths</a></li>
                     {% else %}
-                        <li><a href="/login/">Login</a></li>
+                        <li><a href="/accounts/login/">Login</a></li>
                     {% endif %}
                 </ul>
-                {% if user.is_authenticated %}
+		{% if user.is_authenticated %}
+		    <h4 class="pull-left">Welcome {{ user.username }}</h4> &nbsp;
                     <form class="navbar-form pull-right" action="/accounts/logout/" method="POST">
                         {% csrf_token %}
                         <input class="btn btn-mini" type="submit" value="Logout" />
